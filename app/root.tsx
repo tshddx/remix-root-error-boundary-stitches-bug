@@ -9,7 +9,7 @@ import {
 import type { MetaFunction } from "remix";
 
 import { styled } from '@stitches/react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 const Box = styled('div');
 
@@ -18,7 +18,29 @@ export const meta: MetaFunction = () => {
 };
 
 export default function App() {
+  return (
+    <Document>
+      <Outlet />
+    </Document>
+  );  
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Document>
+      <h1>This is the root route's ErrorBoundary</h1>
+      <p>Error: {error.message}</p>
+    </Document>
+  );
+}
+
+function Document({ children }: { children: ReactNode }) {
   const [index, setIndex] = useState(0);
+  const [throwError, setThrowError] = useState(false);
+  if (throwError) {
+    throw new Error("you requested an error be thrown");
+  }
+
   return (
     <html lang="en" key={index}>
       <head>
@@ -29,7 +51,7 @@ export default function App() {
       </head>
       <body>
         <Box
-          css={{ backgroundColor: 'LightPink', padding: '2em', fontSize: 24 }}
+          css={{ backgroundColor: 'LightPink', padding: '2em', fontSize: 24, display: 'flex', flexDirection: 'column', width: 300, gap: '1em' }}
         >
           <Box>This text and button should be inside a pink box.</Box>
           <Box
@@ -39,8 +61,15 @@ export default function App() {
           >
             Click me to re-render the html tag
           </Box>
+          <Box
+            as="button"
+            onClick={() => setThrowError(true)}
+            css={{ fontSize: 'inherit' }}
+          >
+            Click me to trigger the ErrorBoundary
+          </Box>
         </Box>
-        <Outlet />
+        {children}
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
