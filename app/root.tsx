@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Links,
   LiveReload,
@@ -8,7 +9,7 @@ import {
 } from "remix";
 import type { MetaFunction } from "remix";
 
-import { styled } from '@stitches/react';
+import { styled, getCssText } from '~/stitches.config';
 import { ReactNode, useState } from 'react';
 
 const Box = styled('div');
@@ -22,7 +23,7 @@ export default function App() {
     <Document>
       <Outlet />
     </Document>
-  );  
+  );
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -37,6 +38,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 function Document({ children }: { children: ReactNode }) {
   const [index, setIndex] = useState(0);
   const [throwError, setThrowError] = useState(false);
+
   if (throwError) {
     throw new Error("you requested an error be thrown");
   }
@@ -48,6 +50,7 @@ function Document({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        <style dangerouslySetInnerHTML={{ __html: getCssText() }} />
       </head>
       <body>
         <Box
